@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Goaten Studio | Animation Studio</title>
+    <link rel="icon" type="image/png" href="Logo/GOATEN_putih.png">
+    <meta name="description" content="Goaten Studio is an animation studio that provides high-quality services including 2D/3D Animation, Showreel, IP Development, and Creative Collaboration.">
+    <meta name="keywords" content="Goaten Studio, Goaten Animation Studio, Animation Studio, Animation Production Services, Animation Showreel, Animation Intellectual Properties, Animation Collaboration">
+    <meta name="author" content="Goaten Studio">
+    <meta name="robots" content="index, follow">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <style>
+        /* ========================================== */
+        /* BASE STYLING (DARK MODE + BATIK TEXTURE)   */
+        /* ========================================== */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            color: #202124;
+            min-height: 100vh;
+            overflow-x: hidden;
+            
+            /* WARNA DASAR ABU KEHITAMAN */
+            background-color: #16181d; 
+
+            /* PATTERN BATIK KAWUNG GEOMETRIS (ABU-ABU CERAH) */
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill='none' stroke='%23b3b3b3' stroke-width='1' stroke-opacity='0.15'%3E%3Ccircle cx='50' cy='50' r='50'/%3E%3Ccircle cx='50' cy='50' r='35'/%3E%3Ccircle cx='0' cy='0' r='50'/%3E%3Ccircle cx='0' cy='0' r='35'/%3E%3Ccircle cx='100' cy='0' r='50'/%3E%3Ccircle cx='100' cy='0' r='35'/%3E%3Ccircle cx='0' cy='100' r='50'/%3E%3Ccircle cx='0' cy='100' r='35'/%3E%3Ccircle cx='100' cy='100' r='50'/%3E%3Ccircle cx='100' cy='100' r='35'/%3E%3Cpath d='M50 0v100M0 50h100M15 15l70 70M15 85l70-70'/%3E%3C/g%3E%3C/svg%3E");
+            background-size: 100px 100px;
+            background-attachment: fixed;
+        }
+
+        /* Container Pembungkus agar konten bisa tengah tapi bisa di-scroll kalau panjang */
+        .main-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding-top: 100px; /* Space untuk logo header */
+            padding-bottom: 50px;
+        }
+
+        /* Container Ikon Sosmed */
+        .social-sidebar {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .social-link {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 12px;
+            border-radius: 50px;
+            color: white;
+            text-decoration: none;
+            width: 50px;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .social-link:hover {
+            width: 200px;
+            background: #fac158;
+            color: #16181d;
+        }
+
+        .social-text {
+            margin-left: 15px;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-weight: 600;
+        }
+
+        .social-link:hover .social-text {
+            opacity: 1;
+        }
+
+        /* ========================================== */
+        /* 1. TOP SECTION (Logo & Title)              */
+        /* ========================================== */
+        .brand-section {
+            position: fixed; 
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-align: center;
+            z-index: 100;
+            width: fit-content;
+            font-size: 2.0rem;
+            cursor: pointer;
+        }
+
+        .brand-logo {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4285f4, #ea4335); 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin: 0;
+            background: linear-gradient(90deg, #dadada);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -1px;
+            text-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+        }
+
+        /* ========================================== */
+        /* PAGE ROUTING SYSTEM (SPA)                  */
+        /* ========================================== */
+        .page-content {
+            display: none; /* Sembunyikan semua page secara default */
+            animation: fadeIn 0.6s ease forwards;
+            width: 100%;
+            max-width: 1200px; /* Sedikit diperlebar agar maskot besar muat */
+            padding: 0 20px;
+        }
+
+        .page-content.active {
+            display: block; /* Hanya tampilkan yang aktif */
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ========================================== */
+        /* HERO SECTION (Mascot & Nav Card) - HOME    */
+        /* ========================================== */
+        .hero-container {
+            position: relative;
+            width: 70vmin;  
+            height: 70vmin; 
+            max-width: 600px;
+            max-height: 600px;
+            display: flex;
+            justify-content: center;
+            margin: 0 auto;
+        }
+
+        .mascot-box {
+            width: 110%;
+            height: 100%;
+            border-radius: 60px; 
+            background: #ff6b6b; 
+            background-image: url('https://via.placeholder.com/600/ff6b6b/ffffff?text=Maskot+Raksasa'); 
+            background-size: cover;
+            background-position: center;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+            transform: rotate(-3deg); 
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 1; 
+        }
+
+        .hero-container:hover .mascot-box {
+            transform: rotate(0deg) scale(1.02); 
+        }
+
+        /* CARD NAVIGASI */
+        .nav-card {
+            position: absolute;
+            top: 70%; 
+            left: 50%;
+            width: 95vw; 
+            max-width: 900px;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(15px);
+            padding: 25px 30px;
+            border-radius: 30px;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.4), inset 0 0 0 2px rgba(255,255,255,0.9);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            z-index: 10; 
+
+            opacity: 0;
+            visibility: hidden;
+            transform: translate(-50%, -40px) scale(0.95); 
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none;
+        }
+
+        .hero-container:hover .nav-card {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, 0) scale(1);
+            pointer-events: auto;
+        }
+
+        .nav-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap; 
+            justify-content: center;
+        }
+
+        .nav-btn {
+            text-decoration: none;
+            color: #4a4d52; 
+            font-weight: 700;
+            padding: 14px 28px;
+            border-radius: 50px;
+            background: #ffd587;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            display: inline-block;
+            border: 2px solid transparent;
+            font-size: 1rem;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .nav-btn:hover {
+            color: #d24949;
+            background: #c9c9c9;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        /* ========================================== */
+        /* INNER PAGES STYLING (Glassmorphism)        */
+        /* ========================================== */
+        .content-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
+            padding: 40px;
+            color: white;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            position: relative;
+        }
+
+        .content-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            background: linear-gradient(90deg, #fac158, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 30px;
+            transition: 0.3s;
+            border: 1px solid rgba(255,255,255,0.2);
+            cursor: pointer;
+        }
+        
+        .back-btn:hover {
+            background: #fac158;
+            color: #16181d;
+        }
+
+        /* Video Wrapper untuk Showreel */
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            height: 0;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            margin-bottom: 20px;
+        }
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Grid Services & IPs */
+        .grid-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .item-card {
+            background: rgba(255,255,255,0.1);
+            padding: 25px;
+            border-radius: 20px;
+            text-align: center;
+            transition: 0.3s;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .item-card:hover {
+            transform: translateY(-10px);
+            background: rgba(255,255,255,0.15);
+            border-color: #fac158;
+        }
+
+        /* ========================================== */
+        /* RESPONSIVITAS HP                           */
+        /* ========================================== */
+        @media (max-width: 600px) {
+            h1 { font-size: 1.8rem; }
+            .brand-logo { width: 45px; height: 45px; }
+            .main-wrapper { padding-top: 120px; }
+            
+            .nav-card { 
+                opacity: 1 !important; 
+                visibility: visible !important; 
+                transform: translate(-50%, 0) scale(1) !important; 
+                pointer-events: auto !important;
+                padding: 20px 15px; 
+            }
+            .nav-btn { padding: 10px 15px; font-size: 0.85rem; width: 100%; }
+            .nav-list { flex-direction: column; gap: 10px; }
+
+            .social-sidebar { display: none; } 
+            
+            .content-card { padding: 25px 15px; }
+            .content-title { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="social-sidebar">
+            <a href="https://mail.google.com/mail/?view=cm&fs=1&to=animationkurban@gmail.com" class="social-link" title="animationkurban@gmail.com">
+                <i class="fa-2x fas fa-envelope"></i>
+                <span class="social-text">Email-Us</span>
+            </a>
+            <a href="https://www.linkedin.com/in/goaten-animation-26aa503aa/" class="social-link">
+                <i class="fa-2x fab fa-linkedin"></i>
+                <span class="social-text">LinkedIn Profile</span>
+            </a>
+            <a href="https://x.com/Goaten_Studio" target="_blank" class="social-link">
+              <i class="fa-2x fab fa-twitter"></i>
+             <span class="social-text">@Goaten_Studio</span>
+            </a>
+            <a href="https://www.instagram.com/p/DYmLmhHk1W8/" target="_blank" class="social-link">
+              <i class="fa-2x fab fa-instagram"></i>
+             <span class="social-text">@Goaten_Studio</span>
+            </a>
+            <a href="https://wa.me/+6285607456327" target="_blank" class="social-link">
+                <i class="fa-2x fab fa-whatsapp"></i>
+                <span class="social-text">+6285607456327</span>
+            </a>
+        </div>
+
+        <div class="brand-section" onclick="navigateTo('home')">
+            <img src="Logo/GOATEN_putih.png" onerror="this.src='https://via.placeholder.com/60/4285f4/ffffff?text=GS'" alt="Goaten Studio Logo" class="brand-logo">
+            <h1 class="font-bold">
+                <span class="text-white">Goaten</span> 
+                <span class="text-red-500">Studio</span>
+            </h1>
+        </div>
+    </header>
+
+    <main class="main-wrapper">
+
+        <section id="home" class="page-content active">
+            <div class="hero-container">
+                <div class="mascot-box">
+                    <img src="MASKOT/EXPRESION 1.png" onerror="this.src='https://via.placeholder.com/600/ff6b6b/ffffff?text=Maskot+Raksasa'" alt="Maskot Raksasa Goaten Studio" class="w-full h-full object-cover rounded-[40px]">
+                </div>
+
+                <nav class="nav-card">
+                    <ul class="nav-list">
+                        <li><a onclick="navigateTo('about')" class="nav-btn uppercase">About Us</a></li>
+                        <li><a onclick="navigateTo('showreel')" class="nav-btn uppercase">Showreel</a></li>
+                        <li><a onclick="navigateTo('concept')" class="nav-btn uppercase">Concept & Illustrations</a></li>
+                        <li><a onclick="navigateTo('ips')" class="nav-btn uppercase">IPs</a></li>
+                        <li><a onclick="navigateTo('services')" class="nav-btn uppercase">Our Services</a></li>
+                        <li><a onclick="navigateTo('collab')" class="nav-btn uppercase">Collaboration</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </section>
+
+        <section id="about" class="page-content">
+            <div class="flex flex-col md:flex-row gap-8 items-start">
+                <div class="flex-1 w-full">
+                    <div class="content-card">
+                        <button onclick="navigateTo('home')" class="back-btn relative z-50"><i class="fas fa-arrow-left"></i> Home</button>
+                        <h2 class="content-title">About Goaten Studio</h2>
+                        
+                        <div class="flex flex-col md:flex-row gap-8 md:gap-12 items-center mt-12 mb-6">
+                            
+                            <div class="w-full md:w-1/2 flex justify-center z-10 relative group">
+                                <img src="MASKOT/EXPRESION 2.png" alt="Team" class="pointer-events-none w-full max-w-[350px] md:max-w-full md:scale-125 lg:scale-[4.0] object-contain drop-shadow-[0_20px_30px_rgba(0,0,0,0.6)] group-hover:rotate-3 transition-transform duration-500">
+                            </div>
+                            
+                            <div class="w-full md:w-1/2 text-gray-300 space-y-6 text-justify md:text-left text-lg md:text-xl leading-relaxed relative z-20">
+                                <p>GOATEN is a creative animation studio specializing in medium to high-quality 2D animation for brands, agencies, and digital businesses worldwide.</p>
+                                <p>We help our clients communicate complex ideas, promote products, and engage audiences through clear, compelling, and visually strong animation.</p>
+                                <p>Our focus is not only on visuals, but on storytelling, clarity, and results.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hidden md:block w-40 lg:w-64 shrink-0 sticky top-32 group cursor-pointer z-10 pt-12 translate-y-[50px] translate-x-[90px]">
+                    <div class="absolute top-0 left-1/2 -translate-x-[1px] opacity-0 group-hover:opacity-100 group-hover:-translate-y-[30px] transition-all duration-300 bg-[#fac158] text-[#16181d] font-bold py-2 px-4 rounded-xl text-sm whitespace-nowrap shadow-lg">
+                        Know Us! 🐐
+                        <div class="absolute -bottom-2 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[6px] border-l-transparent border-t-[8px] border-t-[#fac158] border-r-[6px] border-r-transparent"></div>
+                    </div>
+                    <img src="MASKOT/EXPRESION 5.png" onerror="this.src='https://via.placeholder.com/300/fac158/16181d?text=Maskot'" alt="Maskot About" class="pointer-events-none w-full -translate-x-[10px] translate-y-1/3 lg:scale-[5.0] drop-shadow-[0_15px_25px_rgba(0,0,0,0.5)] group-hover:scale-[3.5] group-hover:-rotate-3 transition-all duration-300">
+                </div>
+            </div>
+        </section>
+
+        <section id="showreel" class="page-content">
+            <div class="flex flex-col md:flex-row gap-8 items-start">
+                <div class="flex-1 w-full">
+                    <div class="content-card">
+                        <button onclick="navigateTo('home')" class="back-btn"><i class="fas fa-arrow-left"></i> Home</button>
+                        <h2 class="content-title">Main Showreel</h2>
+                        <p class="text-center text-gray-300 mb-8">Watch our compilation of the best work from various 2D animation projects..</p>
+                        
+                        <div class="video-wrapper">
+                            <iframe src="https://drive.google.com/file/d/1Ba4xcQfLEpOG6s3ILaPm3cm6xqrJFSb0/preview" title="Goaten Showreel" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+                        </div>
+                    </div>
+
+                    <div class="content-card mt-8">
+                        <button onclick="navigateTo('home')" class="back-btn"><i class="fas fa-arrow-left"></i> Home</button>
+                        <h2 class="content-title">2D Rigging Animation</h2>
+                        <p class="text-center text-gray-300 mb-8">This is our 2D rigging animation showcase.</p>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+                            <div class="video-wrapper">
+                                <iframe src="https://drive.google.com/file/d/1GE_ccy-h-YGGpHCQLodtuu75KLHFktEz/preview" title="Goaten Showreel" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+                            </div>
+
+                            <div class="video-wrapper">
+                                <iframe src="https://drive.google.com/file/d/1zVOuYzkVuDVHOWmdCl0eYTXkDHSyPzfa/preview" title="Goaten Showreel" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+                            </div>
+
+                            <div class="video-wrapper md:col-span-2 md:w-3/2 w-full mx-auto">
+                                <iframe src="https://drive.google.com/file/d/1rQrxkvLOoUhxT_eWcV71-ljBAhbpUfvD/preview" title="Goaten Showreel" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="content-card mt-8">
+                        <button onclick="navigateTo('home')" class="back-btn"><i class="fas fa-arrow-left"></i> Home</button>
+                        <h2 class="content-title">2D Cut-Out Animation</h2>
+                        <p class="text-center text-gray-300 mb-8">This is our 2D cut-out animation showcase.</p>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+                            <div class="video-wrapper">
+                                <iframe src="https://drive.google.com/file/d/1nTtVsQLm9MpwZSbs7bvpv58UtCO-dGZv/preview" title="Goaten Showreel" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+                            </div>
+
+                            <div class="video-wrapper">
+                                <iframe src="https://drive.google.com/file/d/1Jy_HcuVJfYWNmRBSEdHNGXBoqxVQr2tY/preview" title="Goaten Showreel" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="content-card mt-8">
+                        <button onclick="navigateTo('home')" class="back-btn"><i class="fas fa-arrow-left"></i> Home</button>
+                        <h2 class="content-title">2D Explainer Animation</h2>
+                        <p class="text-center text-gray-300 mb-8">This is our 2D explainer animation compilation showcase.</p>
+                        
+                        <div class="video-wrapper">
+                            <iframe src="https://drive.google.com/file/d/12RZEoD8QIKgAsGlsFooADL6iLeflOrbo/preview" title="Goaten Showreel" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hidden md:block w-40 lg:w-64 shrink-0 sticky top-32 group cursor-pointer z-10 pt-12 translate-y-[90px] translate-x-[150px]">
+                    <div class="absolute top-0 left-1/2 -translate-x-[200px] opacity-0 group-hover:opacity-100 group-hover:-translate-y-[30px] transition-all duration-300 bg-[#fac158] text-[#16181d] font-bold py-2 px-4 rounded-xl text-sm whitespace-nowrap shadow-lg">
+                        Hello there! This is our showreel! Scroll for more details! 🎬
+                        <div class="absolute -bottom-2 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[6px] border-l-transparent border-t-[8px] border-t-[#fac158] border-r-[6px] border-r-transparent"></div>
+                    </div>
+                    <img src="MASKOT/EXPRESION 4.png" onerror="this.src='https://via.placeholder.com/300/fac158/16181d?text=Maskot'" alt="Maskot Showreel" class="pointer-events-none w-full -translate-x-[1px] translate-y-1/3 lg:scale-[6.0] drop-shadow-[0_15px_25px_rgba(0,0,0,0.5)] group-hover:scale-[4.0] group-hover:-rotate-3 transition-all duration-300">
+                </div>
+            </div>
+        </section>
+          
+        <section id="concept" class="page-content">
+            <div class="flex flex-col md:flex-row gap-8 items-start">
+                <div class="flex-1 w-full">
+                    <div class="content-card">
+                        <button onclick="navigateTo('home')" class="back-btn"><i class="fas fa-arrow-left"></i> Home</button>
+                        <h2 class="content-card content-title">Concept Art</h2>
+                        <p class="text-center text-gray-300 mb-8"></p>
+
+                        <div class="grid-cards">
+                            <div class="item-card">
+                                <img src="https://i.pinimg.com/736x/6e/62/2b/6e622b1267c1655a3f218cfc9fdc6416.jpg" class="w-full rounded-xl mb-4">
+                                <h3 class="text-xl font-bold text-white">"Demon King"</h3>
+                                <p class="text-sm text-gray-400 mt-2">The Demon King is a title given to the strongest evil being in the world, but unfortunately, there is little information about him, such as his age.</p>
+                                <p class="text-sm text-gray-400 mt-2">There is also no information about his attributes or how he became that way, only the fact that if he uses his power seriously, he can even destroy the world. </p>
+                            </div>
+                            
+                            <div class="item-card">
+                                <img src="https://i.pinimg.com/736x/33/39/e2/3339e2908c06956870b575507b8a429e.jpg" class="w-full rounded-xl mb-4">
+                                <h3 class="text-xl font-bold text-white">"Demon King (colored)"</h3>
+                                <p class="text-sm text-gray-400 mt-2">The Demon King is a title given to the strongest evil being in the world, but unfortunately, there is little information about him, such as his age.</p>
+                                <p class="text-sm text-gray-400 mt-2">There is also no information about his attributes or how he became that way, only the fact that if he uses his power seriously, he can even destroy the world. </p>
+                            </div>
+                        </div>
+                        <div class="grid-cards">
+                            <div class="item-card">
+                                <img src="https://i.pinimg.com/736x/6f/7e/2c/6f7e2ce86e764f702f31679ed6a3515f.jpg" class="w-full rounded-xl mb-4">
+                                <h3 class="text-xl font-bold text-white">"Tia"</h3>
+                                <p class="text-sm text-gray-400 mt-2">Beastman Slave</p>
+                            </div>
+                            
+                            <div class="item-card">
+                                <img src="https://i.pinimg.com/736x/fb/4d/24/fb4d24c95f0b533b991c0f4ed3380d16.jpg" class="w-full rounded-xl mb-4">
+                                <h3 class="text-xl font-bold text-white">"Gale"</h3>
+                                <p class="text-sm text-gray-400 mt-2">A skilled archer and tracker.</p>
+                            </div>
+
+                            <div class="item-card">
+                                <img src="https://i.pinimg.com/736x/67/df/d1/67dfd1cac24e97453b1d58e32daad261.jpg" class="w-full rounded-xl mb-4">
+                                <h3 class="text-xl font-bold text-white">"Arabella"</h3>
+                                <p class="text-sm text-gray-400 mt-2">Innkeeper of a small tavern in the countryside.</p>
+                            </div>
+                        </div>
+
+                        <h2 class="content-card content-title translate-y-[10%]">Illustrations </h2>
+                        <p class="text-center text-gray-300 mb-8"></p>
+                        <div class="grid-cards">
+                            <div class="item-card">
+                                <img src="https://i.pinimg.com/736x/76/da/84/76da84afcadf844ab8cee52c0c1fef50.jpg" class="w-full rounded-xl mb-4">
+                                <h3 class="text-xl font-bold text-white">"Warrior Woman"</h3>
+                                <p class="text-sm text-gray-400 mt-2">A brave warrior with a mysterious past.</p>
+                            </div>
+                        </div>
+
+                        <div class="grid-cards">
+                            <div class="item-card">
+                                <img src="https://i.pinimg.com/736x/d2/af/52/d2af52ecf9f7296f13f5f6ba7bd98dc6.jpg" class="w-full rounded-xl mb-4">
+                                <h3 class="text-xl font-bold text-white">"Dragon"</h3>
+                                <p class="text-sm text-gray-400 mt-2">Ancient dragons that live in the underground with rich materials and mysterious objects make these dragons have almost immortal physical capabilities.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hidden md:block w-40 lg:w-64 shrink-0 sticky top-32 group cursor-pointer z-10 pt-12 translate-y-[110px] translate-x-[110px]">
+                    <div class="absolute top-0 left-1/2 -translate-x-[110px] opacity-0 group-hover:opacity-100 group-hover:-translate-y-[40px] transition-all duration-300 bg-[#fac158] text-[#16181d] font-bold py-2 px-4 rounded-xl text-sm whitespace-nowrap shadow-lg">
+                        Our wild ideas! Scroll for more! 🎨
+                        <div class="absolute -bottom-2 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[6px] border-l-transparent border-t-[8px] border-t-[#fac158] border-r-[6px] border-r-transparent"></div>
+                    </div>
+                    <img src="MASKOT/EXPRESION 3.png" onerror="this.src='https://via.placeholder.com/300/fac158/16181d?text=Maskot'" alt="Maskot Concept" class="pointer-events-none w-full translate-x-[50px] translate-y-1/3 lg:scale-[5.0] drop-shadow-[0_15px_25px_rgba(0,0,0,0.5)] group-hover:scale-[3.5] group-hover:-rotate-3 transition-all duration-300">
+                </div>
+            </div>
+        </section>
+
+        <section id="ips" class="page-content">
+            <div class="flex flex-col md:flex-row gap-8 items-start">
+                <div class="flex-1 w-full">
+                    <div class="content-card">
+                        <button onclick="navigateTo('home')" class="back-btn"><i class="fas fa-arrow-left"></i> Home</button>
+                        <h2 class="content-title">Intellectual Properties (IPs)</h2>
+                        <p class="text-center text-gray-300 mb-8"></p>
+
+                        <div class="grid-cards">
+                            <div class="item-card">
+                                <img src="https://i.pinimg.com/736x/68/bc/cb/68bccb603af4a08c55aa36d804a97831.jpg" class="w-full rounded-xl mb-4">
+                                <h3 class="text-xl font-bold text-white">"Lo Ceritain Aja"</h3>
+                                <p class="text-sm text-gray-400 mt-2">is a video with a slice of life drama theme that will tell stories from subscribers.</p>
+                                <p class="text-sm text-gray-400 mt-2">Status: Under Development</p>
+                                <p class="text-sm text-gray-400 mt-2">Target: Stay tune, Coming soon this year</p>
+                            </div>
+                            <div class="item-card">
+                                <img src="IPs/VERMILICA.png" class="w-full rounded-xl mb-4">
+                                <h3 class="text-xl font-bold text-white">"Vermilica"</h3>
+                                <p class="text-sm text-gray-400 mt-2">A knight who lost his wife due to a tragedy.</p>
+                                <p class="text-sm text-gray-400 mt-2">Status: Under Development</p>
+                                <p class="text-sm text-gray-400 mt-2">Target: Stay tune!, Available soon at 2027</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="content-card mt-8">
+                        <button onclick="navigateTo('home')" class="back-btn"><i class="fas fa-arrow-left"></i> Home</button>
+                        <h2 class="content-title">More Ips</h2>
+                        <p class="text-center text-gray-300 mb-8"></p>
+
+                        <div class="grid-cards">
+                            <div onclick="navigateTo('collab')" class="item-card">
+                                <img src="https://static.vecteezy.com/system/resources/thumbnails/080/755/310/small/black-click-here-button-with-mouse-cursor-vector.jpg" class="w-full rounded-xl mb-4">
+                                <h3 class="text-xl font-bold text-white">"Unlock for more"</h3>
+                                <p class="text-sm text-gray-400 mt-2">Collaborate with us and gain exclusive access to all our Intellectual Properties.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hidden md:block w-40 lg:w-64 shrink-0 sticky top-32 group cursor-pointer z-10 pt-12 translate-y-[90px] translate-x-[110px]">
+                    <div class="absolute top-0 left-1/2 -translate-x-[130px] opacity-0 group-hover:opacity-100 group-hover:-translate-y-[30px] transition-all duration-300 bg-[#fac158] text-[#16181d] font-bold py-2 px-4 rounded-xl text-sm whitespace-nowrap shadow-lg">
+                        Our original work ✨
+                        <div class="absolute -bottom-2 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[6px] border-l-transparent border-t-[8px] border-t-[#fac158] border-r-[6px] border-r-transparent"></div>
+                    </div>
+                    <img src="MASKOT/EXPRESION 4.png" onerror="this.src='https://via.placeholder.com/300/fac158/16181d?text=Maskot'" alt="Maskot IPs" class="pointer-events-none w-full translate-x-[10px] translate-y-1/3 lg:scale-[6.0] drop-shadow-[0_15px_25px_rgba(0,0,0,0.5)] group-hover:scale-[4.0] group-hover:-rotate-3 transition-all duration-300">
+                </div>
+            </div>
+        </section>
+
+        <section id="services" class="page-content">
+            <div class="flex flex-col md:flex-row gap-8 items-start">
+                <div class="flex-1 w-full">
+                    <div class="content-card">
+                        <button onclick="navigateTo('home')" class="back-btn"><i class="fas fa-arrow-left"></i> Home</button>
+                        <h2 class="content-title">Our Services</h2>
+                        <p class="text-center text-gray-300 mb-8">Professional services to bring your creative vision to life.</p>
+
+                        <div class="grid-cards">
+                            <div class="item-card">
+                                <i class="fas fa-pencil-ruler fa-3x text-orange-400 mb-4"></i>
+                                <h3 class="text-xl font-bold text-white">2D Animation</h3>
+                                <p class="text-sm text-gray-400 mt-2">Fluid frame-by-frame animation and dynamic 2D rigging/cut-out animation that bring your ideas to life.</p>
+                            </div>
+                             <div class="item-card">
+                                <i class="fas fa-lightbulb fa-3x text-red-400 mb-4"></i>
+                                <h3 class="text-xl font-bold text-white">2D Explainer</h3>
+                                <p class="text-sm text-gray-400 mt-2">Providing creative visual animation concepts that are easy to understand, whether in advertising or content form.</p>
+                            </div>
+                            <div class="item-card">
+                                <i class="fas fa-film fa-3x text-red-400 mb-4"></i>
+                                <h3 class="text-xl font-bold text-white">Storyboarding</h3>
+                                <p class="text-sm text-gray-400 mt-2">Precise visualizations that turn your narrative into an immersive cinematic experience.</p>
+                            </div>
+                            <div class="item-card">
+                                <i class="fas fa-bezier-curve fa-3x text-green-400 mb-4"></i>
+                                <h3 class="text-xl font-bold text-white">Motion Graphics</h3>
+                                <p class="text-sm text-gray-400 mt-2">Dynamic graphic animation for promotional needs.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hidden md:block w-40 lg:w-64 shrink-0 sticky top-32 group cursor-pointer z-10 pt-12 translate-y-[90px] translate-x-[110px]">
+                    <div class="absolute top-0 left-1/2 -translate-x-[140px] opacity-0 group-hover:opacity-100 group-hover:-translate-y-[50px] transition-all duration-300 bg-[#fac158] text-[#16181d] font-bold py-2 px-4 rounded-xl text-sm whitespace-nowrap shadow-lg">
+                        We're ready to help! 🛠️
+                        <div class="absolute -bottom-2 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[6px] border-l-transparent border-t-[8px] border-t-[#fac158] border-r-[6px] border-r-transparent"></div>
+                    </div>
+                    <img src="MASKOT/EXPRESION 1.png" onerror="this.src='https://via.placeholder.com/300/fac158/16181d?text=Maskot'" alt="Maskot Services" class="pointer-events-none w-full -translate-x-[10px] translate-y-1/3 lg:scale-[3.5] drop-shadow-[0_15px_25px_rgba(0,0,0,0.5)] group-hover:scale-[2.5] group-hover:-rotate-3 transition-all duration-300">
+                </div>
+            </div>
+        </section>
+
+        <section id="collab" class="page-content">
+            <div class="flex flex-col md:flex-row gap-8 items-start">
+                <div class="flex-1 w-full">
+                    
+                    <div class="content-card relative overflow-hidden">
+                        
+                        <div class="absolute -right-20 -top-20 w-64 h-64 bg-orange-500 rounded-full mix-blend-screen filter blur-[80px] opacity-20 animate-pulse"></div>
+                        <div class="absolute -left-20 -bottom-20 w-64 h-64 bg-blue-500 rounded-full mix-blend-screen filter blur-[80px] opacity-20 animate-pulse" style="animation-delay: 1s;"></div>
+
+                        <button onclick="navigateTo('home')" class="back-btn relative z-50"><i class="fas fa-arrow-left"></i> Home</button>
+                        
+                        <div class="text-center relative z-10 mb-10 mt-4">
+                            <div class="inline-block bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)] rounded-full px-6 py-2 mb-6">
+                                <span class="text-orange-400 font-bold tracking-widest uppercase text-sm"><i class="fas fa-handshake mr-2"></i> Let's Connect</span>
+                            </div>
+                            <h2 class="text-4xl md:text-5xl font-bold mb-6" style="background: linear-gradient(90deg, #fac158, #ff6b6b); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                                Ready for Your Next Big Project?
+                            </h2>
+                            <p class="text-gray-300 text-lg max-w-2xl mx-auto leading-relaxed">
+                                Got a brilliant idea? We are always open to discussing collaboration opportunities, IP development, or simply exchanging creative ideas. Let's make magic happen with Goaten Studio!
+                            </p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
+
+                            <a href="https://mail.google.com/mail/?view=cm&fs=1&to=animationkurban@gmail.com" class="group relative p-8 rounded-3xl bg-[rgba(0,0,0,0.4)] border border-[rgba(255,255,255,0.1)] hover:border-orange-400 transition-all duration-500 overflow-hidden text-center hover:-translate-y-2 shadow-2xl hover:shadow-[0_10px_30px_rgba(250,193,88,0.15)]">
+                                <div class="absolute inset-0 bg-orange-400/10 translate-y-[100%] group-hover:translate-y-0 transition-transform duration-500 ease-out"></div>
+                                
+                                <div class="w-20 h-20 mx-auto bg-orange-400/20 border border-orange-400/30 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 group-hover:-rotate-12 transition-all duration-500">
+                                    <i class="fas fa-envelope-open-text fa-3x text-orange-400"></i>
+                                </div>
+                                <h3 class="text-2xl font-bold text-white mb-2 relative z-10">Email Us</h3>
+                                <p class="text-gray-400 text-sm relative z-10">animationkurban@gmail.com</p>
+                                <span class="inline-block mt-6 text-orange-400 font-semibold group-hover:tracking-widest transition-all duration-300 relative z-10">Drop a Message &rarr;</span>
+                            </a>
+
+                            <a href="https://wa.me/+6285607456327" target="_blank" class="group relative p-8 rounded-3xl bg-[rgba(0,0,0,0.4)] border border-[rgba(255,255,255,0.1)] hover:border-green-500 transition-all duration-500 overflow-hidden text-center hover:-translate-y-2 shadow-2xl hover:shadow-[0_10px_30px_rgba(34,197,94,0.15)]">
+                                <div class="absolute inset-0 bg-green-500/10 translate-y-[100%] group-hover:translate-y-0 transition-transform duration-500 ease-out"></div>
+                                
+                                <div class="w-20 h-20 mx-auto bg-green-500/20 border border-green-500/30 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-12 transition-all duration-500">
+                                    <i class="fab fa-whatsapp fa-3x text-green-400"></i>
+                                </div>
+                                <h3 class="text-2xl font-bold text-white mb-2 relative z-10">WhatsApp Us</h3>
+                                <p class="text-gray-400 text-sm relative z-10">For quick chats & fast responses.</p>
+                                <span class="inline-block mt-6 text-green-400 font-semibold group-hover:tracking-widest transition-all duration-300 relative z-10">Start Chatting &rarr;</span>
+                            </a>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hidden md:block w-40 lg:w-64 shrink-0 sticky top-32 group cursor-pointer z-10 pt-12 translate-y-[90px] translate-x-[110px]">
+                    <div class="relative w-24 h-32 lg:w-32 lg:h-48 group cursor-pointer flex justify-center items-center">
+                        <div class="absolute top-0 left-1/2 translate-x-[30px] opacity-0 group-hover:opacity-100 group-hover:-translate-y-[80px] transition-all duration-300 bg-[#fac158] text-[#16181d] font-bold py-2 px-4 rounded-xl text-sm whitespace-nowrap shadow-lg">
+                            Let's Collaborate! 🤝
+                            <div class="absolute -bottom-2 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[6px] border-l-transparent border-t-[8px] border-t-[#fac158] border-r-[6px] border-r-transparent"></div>
+                        </div>
+                        <img src="MASKOT/EXPRESION 5.png" onerror="this.src='https://via.placeholder.com/300/fac158/16181d?text=Maskot'" alt="Maskot Collab" class="pointer-events-none w-full translate-x-[110px] translate-y-1/3 lg:scale-[9.5] drop-shadow-[0_15px_25px_rgba(0,0,0,0.5)] group-hover:scale-[7.5] group-hover:-rotate-3 transition-all duration-300">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        function navigateTo(pageId) {
+            // 1. Sembunyikan semua halaman
+            const pages = document.querySelectorAll('.page-content');
+            pages.forEach(page => {
+                page.classList.remove('active');
+            });
+
+            // 2. Tampilkan halaman yang dituju
+            const targetPage = document.getElementById(pageId);
+            if (targetPage) {
+                targetPage.classList.add('active');
+            }
+
+            // 3. Scroll layar kembali ke atas saat ganti halaman (opsional tapi bagus untuk UX)
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
